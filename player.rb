@@ -2,10 +2,11 @@ class Player
 	DANGER_HEALTH = 10
 	MIN_HEALTH = 15
 	MAX_LOOK = 4
+	# turn
 	def play_turn(warrior)
 		@last_health ||= warrior.health
 		@took_damage = @last_health > warrior.health
-		feeling warrior
+		action(warrior, warrior.feel)
 		@last_health = warrior.health
 	end
 	private
@@ -18,9 +19,7 @@ class Player
 		bad_health = warrior.health < DANGER_HEALTH
 		@took_damage && bad_health
 	end
-	def feeling(warrior)
-		action(warrior, warrior.feel)
-	end
+	# warrior actions
 	def action (warrior, space)
 		my_enemies = enemies warrior
 		my_captives = captives warrior
@@ -32,15 +31,13 @@ class Player
 			else
 				warrior.attack!(my_enemies.shift[0])
 			end
-		elsif should_rest? warrior
-			p should_rest? warrior
-			warrior.rest!
 		elsif my_captives.length > 0
 			warrior.rescue!(my_captives.shift[0])
 		else
 			warrior.walk!(warrior.direction_of_stairs)
 		end
 	end
+	# gives positions of enemies in a hash
 	def enemies(warrior)
 		@number ||= {};
 		if @number.length ==0
@@ -48,6 +45,7 @@ class Player
 		end
 		@number
 	end
+	# gives positions of captives in a hash
 	def captives(warrior)
 		@numberc ||= {};
 		if @numberc.length ==0
